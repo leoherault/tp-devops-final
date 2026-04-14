@@ -1,0 +1,21 @@
+- hosts: k3s_nodes
+  become: yes
+  tasks:
+    - name: Copier les manifests et le SQL sur la VM
+      copy:
+        src: "{{ item }}"
+        dest: "/tmp/{{ item }}"
+      with_items:
+        - init_database.sql
+        - db-configmap.yaml
+        - db-deployment.yaml
+        - api-deployment.yaml
+        - hpa.yaml
+
+    - name: Appliquer les manifests Kubernetes
+      shell: "kubectl apply -f /tmp/{{ item }}"
+      with_items:
+        - db-configmap.yaml
+        - db-deployment.yaml
+        - api-deployment.yaml
+        - hpa.yaml
