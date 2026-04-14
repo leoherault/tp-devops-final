@@ -1,0 +1,11 @@
+---
+- name: Preparation de la VM
+  hosts: all
+  become: yes
+  tasks:
+    - name: Verifier la connexion
+      ansible.builtin.ping:
+
+    - name: Mise a jour du cache apt
+      apt:
+        update_cache: yes
