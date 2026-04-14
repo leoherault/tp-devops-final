@@ -1,0 +1,30 @@
+name: CI/CD Pipeline TP DevOps
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    # On précise bien d'utiliser ton runner à toi
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v4
+
+      - name: Configuration de l'infrastructure (Ansible)
+        run: |
+          cd partie1
+          # On lance le playbook pour préparer la VM
+          ansible-playbook -i hosts.ini main.yml
+        # Note : Assure-toi que ton utilisateur a les droits SSH sans mot de passe vers la VM
+
+      - name: Déploiement sur Kubernetes (K3s)
+        run: |
+          cd partie3
+          # On applique tous les manifestes dans l'ordre
+          kubectl apply -f db-configmap.yaml
+          kubectl apply -f db-deployment.yaml
+          kubectl apply -f api-deployment.yaml
+          kubectl apply -f hpa.yaml
